@@ -6,11 +6,13 @@ import javax.sql.DataSource;
 
 import org.h2.tools.Server;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles(value="h2")
+@Configuration
+@Profile(value="h2")
 public class H2Database extends JpaConfig{
     @Bean
     @DependsOn(value = "h2Server")
