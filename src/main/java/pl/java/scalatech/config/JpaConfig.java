@@ -1,7 +1,6 @@
 package pl.java.scalatech.config;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +26,6 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import pl.java.scalatech.jpa.CustomHibernateJpaDialect;
-
-import com.google.common.collect.Lists;
 
 @EnableJpaRepositories(basePackages = "pl.java.scalatech.repository")
 @PropertySource("classpath:spring-data.properties")
@@ -128,13 +125,10 @@ public abstract class JpaConfig {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws SQLException {
+        log.info("+++ entityManagerFactory started ...");
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setJpaDialect(customJpaDialect());
-        if (Arrays.asList(env.getActiveProfiles()).containsAll(Lists.newArrayList("dev", "test"))) {
-            lef.setDataSource(dataSource());
-        } else {
-            lef.setDataSource(dataSource());
-        }
+        lef.setDataSource(dataSource());
         lef.setJpaVendorAdapter(jpaVendorAdapter());
         lef.setJpaPropertyMap(jpaProperties());
         lef.setPackagesToScan(jpaPackage); // eliminate persistence.xml
