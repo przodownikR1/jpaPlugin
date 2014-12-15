@@ -14,7 +14,6 @@ import net.sf.log4jdbc.tools.LoggingType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
@@ -33,7 +32,6 @@ import com.google.common.collect.Lists;
 
 @EnableJpaRepositories(basePackages = "pl.java.scalatech.repository")
 @PropertySource("classpath:spring-data.properties")
-@Profile(value = "dev")
 @PropertySource("classpath:application.properties")
 @Slf4j
 public abstract class JpaConfig {
@@ -72,6 +70,8 @@ public abstract class JpaConfig {
 
     @Value("${jpa.package}")
     private String jpaPackage;
+    
+    
 
     /*
      * @Bean(destroyMethod = "close")
@@ -102,12 +102,9 @@ public abstract class JpaConfig {
    
 
     public abstract DataSource dataSource() throws SQLException;
+    public abstract Database dataBase();
     
-    @Bean(name = "h2WebServer", initMethod = "start", destroyMethod = "stop")
-    public org.h2.tools.Server createWebServer() throws SQLException {
-        return org.h2.tools.Server.createWebServer("-web,-webAllowOthers,-webPort,8082".split(","));
-    }
-
+   
     @Bean
     public PlatformTransactionManager transactionManager() {
         return new JpaTransactionManager();
@@ -149,7 +146,7 @@ public abstract class JpaConfig {
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
         hibernateJpaVendorAdapter.setShowSql(showSql);
         hibernateJpaVendorAdapter.setGenerateDdl(hbm2ddlAuto);
-        hibernateJpaVendorAdapter.setDatabase(Database.H2);
+        hibernateJpaVendorAdapter.setDatabase(dataBase());
         hibernateJpaVendorAdapter.setDatabasePlatform(dialect);
         return hibernateJpaVendorAdapter;
     }

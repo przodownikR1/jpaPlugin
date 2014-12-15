@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.orm.jpa.vendor.Database;
 
 @Configuration
 @Profile(value="h2")
@@ -31,9 +32,20 @@ public class H2Database extends JpaConfig{
         return org.h2.tools.Server.createTcpServer("-tcp,-tcpAllowOthers,-tcpPort,9092".split(","));
     }
 
+    @Bean(name = "h2WebServer", initMethod = "start", destroyMethod = "stop")
+    public org.h2.tools.Server createWebServer() throws SQLException {
+        return org.h2.tools.Server.createWebServer("-web,-webAllowOthers,-webPort,8082".split(","));
+    }
+
+    
     @Override
     public DataSource dataSource() throws SQLException {
         DataSource dataSource = dataSource(createTcpServer());
         return dataSource;
+    }
+
+    @Override
+    public Database dataBase() {
+        return Database.H2;
     }
 }
