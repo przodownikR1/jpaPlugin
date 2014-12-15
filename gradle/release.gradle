@@ -1,0 +1,78 @@
+apply plugin: 'maven-publish'
+ext {
+    group = '${group}'
+    version = '${version}'
+    nexusBaseUrl = '${nexusURL}'
+    nexusSnapshotRepoUrl = "${nexusURL}/snapshots"
+    nexusReleaseRepoUrl = "${nexusURL}/releases"
+
+
+}
+publishing {
+    publications {
+        plugin(MavenPublication) {
+      
+            from components.java
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('name', 'basicEntity')
+                root.appendNode('description', 'common entity for all jpa projects')
+                root.appendNode('inceptionYear', '2014')
+                
+                def developer = root.appendNode('developers').appendNode('developer')
+                developer.appendNode('id', 'przodownik')
+                developer.appendNode('name', 'slawek borowiec')
+                developer.appendNode('email', 'przodownikR1@gmail.com')
+                
+                def issues = root.appendNode( 'issueManagement' )
+                issues.appendNode( 'system', 'github' )
+                issues.appendNode( 'url', 'https://github.com/przodownikR1' )
+                
+                def scm = root.appendNode( 'scm' )
+                scm.appendNode( 'url', 'https://github.com/przodownikR1/..' )
+                scm.appendNode( 'connection', 'scm:git:https://github.com/przodownikR1/..' )
+                scm.appendNode( 'developerConnection', 'scm:git:git@github.com:przodownikR1/package.git' )
+                
+                def license = root.appendNode( 'licenses' ).appendNode( 'license' );
+                license.appendNode( 'name', 'The Apache Software License, Version 2.0' )
+                license.appendNode( 'url', 'http://www.apache.org/licenses/LICENSE-2.0.txt' )
+                license.appendNode( 'distribution', 'repo' )
+            }
+            artifact sourcesJar
+        }
+    }
+
+    repositories {
+     /*   maven {
+            name 'myLocal'
+            url "file://${System.env.HOME}/repos/"
+            logger.quiet "${url} "
+            logger.quiet "${System.env.HOME}"
+        }*/
+     
+        maven {
+            name 'remoteRepository'
+            logger.quiet " +++      ${project.version}"
+            url project.version.endsWith('-SNAPSHOT') ? nexusSnapshotRepoUrl : nexusReleaseRepoUrl
+            logger.quiet "  url : ${url}  ,  group : ${group}   ,  version : ${version}"  
+            
+            credentials { 
+                username = '${nexusUsername}'
+                password = '${nexusPassword}'
+            }
+        }
+    }
+    
+/*    uploadArchives {
+        repositories {
+            mavenDeployer {
+                   //http://192.168.1.250:8487/nexus/content/repositories
+                    repository(url: "http://192.168.1.250:8487/nexus/content/repositories/releases"){
+                    logger.quiet " nexusLogin  :  ${nexusLogin}   -- >    nexusPassword  :  ${nexusPassword}  "
+                    authentication ( userName: '${nexusLogin}', password: '${nexusPassword}' )
+                }
+            }
+        }
+    }*/
+    
+}

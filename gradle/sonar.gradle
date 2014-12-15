@@ -1,0 +1,25 @@
+def testResultsDir = "$buildDir/test-results/"
+
+
+
+
+apply plugin: "sonar-runner"
+
+sonarRunner {
+    sonarProperties {
+       property "sonar.projectKey", "${projectName}"
+       property "sonar.projectName", "${projectName}"
+
+        property "sonar.junit.reportsPath", testResultsDir
+        logger.quiet("${sonarJdbcUrl}    ${sonarJdbcDriverClassName}  ${sonarJdbcUsername}  ${sonarJdbcPassword} ")
+        // Address of SonarQube server
+        property "sonar.host.url", "${sonarURL}"
+
+        // SonarQube stores the test results in this database
+        property "sonar.jdbc.url", "${sonarJdbcUrl}"
+        property "sonar.jdbc.driverClassName", "${sonarJdbcDriverClassName}"
+        property "sonar.jdbc.username", "${sonarJdbcUsername}"
+        property "sonar.jdbc.password", "${sonarJdbcPassword}"
+    }
+}
+

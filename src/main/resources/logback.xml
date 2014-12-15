@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	
+
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+		<resetJUL>true</resetJUL>
+	</contextListener>
+
+	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+
+
+	<!-- To enable JMX Management -->
+	<jmxConfigurator />
+
+	<appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%.-1level|%-40.40logger{0}|%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="Console2" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%L - %msg
+				\(login: %X{login}\) %n</pattern>
+		</encoder>
+	</appender>
+
+
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>jpaPlugin.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${USER_HOME}/log/logs/jpaPlugin_%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	
+	 <appender name="Sql" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
+        <file>logs/jpa_plugin_sql.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <maxIndex>10</maxIndex>
+            <fileNamePattern>logs/jpaPlugin.log.%i</fileNamePattern>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>25MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+
+ 
+
+    <logger name="jdbc.sqlonly" additivity="false" level="INFO">
+        <appender-ref ref="Sql" />
+        <appender-ref ref="Console" />
+    </logger>
+	
+	<logger name="org.mortbay.log" level="INFO" />
+
+	<logger name="org.springframework" level="info" additivity="false">
+		<appender-ref ref="Console" />
+	</logger>
+
+	<logger name="org.hibernate" level="info" additivity="false">
+		<appender-ref ref="Console" />
+	</logger>
+
+	<logger name="pl.java.scalatech" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="Console" />
+	</logger>
+
+
+	<logger name="jdbc.sqltiming" additivity="false">
+		<level value="info" />
+		<appender-ref ref="Sql" />
+	</logger>
+	
+	<logger name="jdbc.resultset" additivity="false">
+		<level value="error" />
+		<appender-ref ref="Sql" />
+	</logger>
+	
+	<logger name="jdbc.audit" additivity="false">
+		<level value="error" />
+		<appender-ref ref="Sql" />
+	</logger>
+	
+	<logger name="jdbc.sqlonly" additivity="false">
+		<level value="error" />
+		<appender-ref ref="Sql" />
+	</logger>
+	
+	<logger name="jdbc.resultsettable" additivity="false">
+		<level value="error" />
+		<appender-ref ref="Sql" />
+	</logger>
+	
+	<logger name="jdbc.connection" additivity="false">
+		<level value="error" />
+		<appender-ref ref="Sql" />
+	</logger>
+	
+	<logger name="jdbc.resultsettable" additivity="false">
+		<level value="error" />
+		<appender-ref ref="Sql" />
+	</logger>
+	
+	<logger name="org.h2" additivity="false" level="info" >
+	   <appender-ref ref="Console" />
+	</logger>
+
+
+	<root level="debug">
+		<appender-ref ref="Console" />
+	</root>
+</configuration>
