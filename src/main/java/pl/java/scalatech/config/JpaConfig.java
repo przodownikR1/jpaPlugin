@@ -11,17 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.log4jdbc.tools.Log4JdbcCustomFormatter;
 import net.sf.log4jdbc.tools.LoggingType;
 
-import org.h2.tools.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -39,7 +36,7 @@ import com.google.common.collect.Lists;
 @Profile(value = "dev")
 @PropertySource("classpath:application.properties")
 @Slf4j
-public class JpaConfig {
+public abstract class JpaConfig {
     @Autowired
     private Environment env;
 
@@ -102,23 +99,10 @@ public class JpaConfig {
      * return flyway;
      * }
      */
-    @Bean
-    @DependsOn(value = "h2Server")
-    DataSource dataSource(Server h2Server) {
-        SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-        dataSource.setDriverClass(org.h2.Driver.class);
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-        dataSource.setUrl("jdbc:h2:tcp://localhost:9092/mem:przodownik;DB_CLOSE_DELAY=-1");
-        return dataSource;
-    }
+   
 
-    @Bean(name = "h2Server", initMethod = "start", destroyMethod = "stop")
-    @DependsOn(value = "h2WebServer")
-    public org.h2.tools.Server createTcpServer() throws SQLException {
-        return org.h2.tools.Server.createTcpServer("-tcp,-tcpAllowOthers,-tcpPort,9092".split(","));
-    }
-
+    public abstract DataSource dataSource() throws SQLException;
+    
     @Bean(name = "h2WebServer", initMethod = "start", destroyMethod = "stop")
     public org.h2.tools.Server createWebServer() throws SQLException {
         return org.h2.tools.Server.createWebServer("-web,-webAllowOthers,-webPort,8082".split(","));
@@ -150,9 +134,9 @@ public class JpaConfig {
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setJpaDialect(customJpaDialect());
         if (Arrays.asList(env.getActiveProfiles()).containsAll(Lists.newArrayList("dev", "test"))) {
-            lef.setDataSource(dataSource(createTcpServer()));
+            lef.setDataSource(dataSource());
         } else {
-            lef.setDataSource(dataSource(createTcpServer()));
+            lef.setDataSource(dataSource());
         }
         lef.setJpaVendorAdapter(jpaVendorAdapter());
         lef.setJpaPropertyMap(jpaProperties());
