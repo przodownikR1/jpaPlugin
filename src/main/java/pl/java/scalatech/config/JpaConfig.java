@@ -3,6 +3,7 @@ package pl.java.scalatech.config;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -13,6 +14,7 @@ import net.sf.log4jdbc.tools.LoggingType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
@@ -25,68 +27,76 @@ import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.codahale.metrics.MetricRegistry;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import pl.java.scalatech.jpa.CustomHibernateJpaDialect;
 
 @EnableJpaRepositories(basePackages = "pl.java.scalatech.repository")
 @PropertySource("classpath:spring-data.properties")
 @PropertySource("classpath:application.properties")
 @Slf4j
+@Import(Metrics2Config.class)
 public abstract class JpaConfig {
+    
+    
+    @Autowired
+    Optional<MetricRegistry> metricRegistry;
+    
     @Autowired
     private Environment env;
 
     @Value("${dataSource.driverClassName}")
-    private String driver;
+    protected String driver;
 
     @Value("${dataSource.url}")
-    private String url;
+    protected String url;
 
     @Value("${dataSource.username}")
-    private String username;
+    protected String username;
 
     @Value("${dataSource.password}")
-    private String password;
+    protected String password;
 
     @Value("${hibernate.dialect}")
-    private String dialect;
+    protected String dialect;
 
     @Value("${hibernate.hbm2ddl.auto}")
-    private Boolean hbm2ddlAuto;
+    protected Boolean hbm2ddlAuto;
 
     @Value("${boneCp.partition.count}")
-    private int partitionCount;
+    protected int partitionCount;
 
     @Value("${boneCp.partition.minConnectionsPerPartition}")
-    private int minConnectionsPerPartition;
+    protected int minConnectionsPerPartition;
 
     @Value("${boneCp.partition.maxConnectionsPerPartition}")
-    private int maxConnectionsPerPartition;
+    protected int maxConnectionsPerPartition;
 
     @Value("${hibernate.show.sql}")
-    private Boolean showSql;
+    protected Boolean showSql;
 
     @Value("${jpa.package}")
-    private String jpaPackage;
+    protected String jpaPackage;
     
+  
+    @Value("${jpa.hikariMaxPoolSize}")
+    protected int maxPoolSize;
     
-
-    /*
-     * @Bean(destroyMethod = "close")
-     * @DependsOn("h2Server")
-     * @Profile("test")
-     * public DataSource dataSourceOrginal() {
-     * BoneCPDataSource boneCPDataSource = new BoneCPDataSource();
-     * boneCPDataSource.setDriverClass(driver);
-     * boneCPDataSource.setJdbcUrl(url);
-     * boneCPDataSource.setUsername(username);
-     * boneCPDataSource.setPassword(password);
-     * boneCPDataSource.setPartitionCount(partitionCount);
-     * boneCPDataSource.setMinConnectionsPerPartition(minConnectionsPerPartition);
-     * boneCPDataSource.setMaxConnectionsPerPartition(maxConnectionsPerPartition);
-     * return boneCPDataSource;
-     * }
-     */
-
+    @Value("${jpa.hikariConnectionTimeoutMs}")
+    protected long connectionTimeoutMs;
+    
+    @Value("${jpa.hikariIdleTimeoutMs}")
+    protected long idleTimeoutMs;
+    
+    @Value("${jpa.hikariMaxLifetimeMs}")
+    protected long maxLifetimeMs;
+    
+    @Value("${jpa.hikariRegisterMbeans}")
+    protected boolean registerMbeans;
+    
+   
     /*
      * @Bean
      * public Flyway flyway() {
@@ -98,10 +108,28 @@ public abstract class JpaConfig {
      */
    
 
-    public abstract DataSource dataSource() throws SQLException;
+    public abstract void dataSourceConfigure(HikariConfig hikariConfig) throws SQLException;
     public abstract Database dataBase();
     
    
+  
+    @Bean
+    public DataSource datasource() throws SQLException{
+        HikariConfig config = new HikariConfig();
+        dataSourceConfigure(config);
+        config.setMaximumPoolSize(maxPoolSize);
+       // config.setConnectionTimeout(connectionTimeoutMs);
+        config.setIdleTimeout(idleTimeoutMs);
+        config.setMaxLifetime(maxLifetimeMs);
+        config.setRegisterMbeans(registerMbeans);
+        config.setPoolName("pool");
+        if(metricRegistry.isPresent()){
+         config.setMetricRegistry(metricRegistry.get());
+        }
+        HikariDataSource dataSource = new HikariDataSource(config);
+        return dataSource;
+}
+    
     @Bean
     public PlatformTransactionManager transactionManager() {
         return new JpaTransactionManager();
@@ -128,7 +156,7 @@ public abstract class JpaConfig {
         log.info("+++ entityManagerFactory started ...");
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setJpaDialect(customJpaDialect());
-        lef.setDataSource(dataSource());
+        lef.setDataSource(datasource());
         lef.setJpaVendorAdapter(jpaVendorAdapter());
         lef.setJpaPropertyMap(jpaProperties());
         lef.setPackagesToScan(jpaPackage); // eliminate persistence.xml

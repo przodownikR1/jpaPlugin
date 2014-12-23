@@ -19,6 +19,11 @@ dependencies {
     
     compile ("org.springframework.data:spring-data-jpa:${springDataJPAVersion}")
 
+    compile("com.codahale.metrics:metrics-core:${codahale}")
+    compile("com.codahale.metrics:metrics-jvm:${codahale}")
+    compile("com.codahale.metrics:metrics-logback:${codahale}")
+    compile("com.ryantenney.metrics:metrics-spring:3.0.1")
+    
     compile("org.projectlombok:lombok:1.12.4")
     compile("com.google.guava:guava:16.0.1")    
     compile 'com.h2database:h2:1.3.175'

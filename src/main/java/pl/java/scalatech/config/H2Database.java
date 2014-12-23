@@ -9,21 +9,35 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.orm.jpa.vendor.Database;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @Profile(value="h2")
 public class H2Database extends JpaConfig{
-    @Bean
+    
+    
+    
+    @Bean(destroyMethod = "close")
     @DependsOn(value = "h2Server")
-    DataSource dataSource(Server h2Server) {
-        SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-        dataSource.setDriverClass(org.h2.Driver.class);
-        dataSource.setUsername("sa");
-        dataSource.setPassword("");
-        dataSource.setUrl("jdbc:h2:tcp://localhost:9092/mem:przodownik;DB_CLOSE_DELAY=-1");
+    DataSource dataSource(Server h2Server) throws SQLException {
+        HikariConfig hikariConfig = new HikariConfig();
+        dataSourceConfigure(hikariConfig);
+        hikariConfig.setMaximumPoolSize(maxPoolSize);
+        hikariConfig.setConnectionTimeout(connectionTimeoutMs);
+        hikariConfig.setIdleTimeout(idleTimeoutMs);
+        hikariConfig.setMaxLifetime(maxLifetimeMs);
+        hikariConfig.setRegisterMbeans(registerMbeans);
+        hikariConfig.setConnectionTestQuery("VALUES 1");
+        hikariConfig.addDataSourceProperty("useServerPrepStmts", username);
+        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+        
+        createTcpServer();
+       // CodaHaleMetricsTracker cmt = new CodaHaleMetricsTracker(pool, dataSource.getMetricRegistry());
         return dataSource;
+        
     }
 
     @Bean(name = "h2Server", initMethod = "start", destroyMethod = "stop")
@@ -37,15 +51,17 @@ public class H2Database extends JpaConfig{
         return org.h2.tools.Server.createWebServer("-web,-webAllowOthers,-webPort,8082".split(","));
     }
 
-    
-    @Override
-    public DataSource dataSource() throws SQLException {
-        DataSource dataSource = dataSource(createTcpServer());
-        return dataSource;
-    }
-
+   
     @Override
     public Database dataBase() {
         return Database.H2;
+    }
+
+    @Override
+    public void dataSourceConfigure(HikariConfig hikariConfig) throws SQLException {
+        hikariConfig.addDataSourceProperty("url", url);
+        hikariConfig.setUsername(username);
+        hikariConfig.setPassword(password);
+        hikariConfig.setDataSourceClassName(driver);
     }
 }

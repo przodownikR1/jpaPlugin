@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.java.scalatech.config.JpaEmbeddedConfig;
+import pl.java.scalatech.config.Metrics2Config;
 import pl.java.scalatech.config.PropertiesLoader;
 
 
@@ -23,8 +24,9 @@ public class ApplicationTests {
   
 
     @Test
-    public void contextLoads() {
+    public void contextLoads() throws InterruptedException {
         Assertions.assertThat(true);
+        Thread.sleep(2000);
     }
 
 }

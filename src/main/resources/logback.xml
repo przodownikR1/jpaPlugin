@@ -122,6 +122,15 @@
 	<logger name="org.h2" additivity="false" level="info" >
 	   <appender-ref ref="Console" />
 	</logger>
+	
+	
+	 <logger name="com.zaxxer.hikari" level="debug" additivity="false">
+	   <appender-ref ref="Console" />
+	 </logger>
+	 
+     <logger name="com.zaxxer.hikari.HikariPool" level="debug" additivity="false">
+        <appender-ref ref="Console" />
+     </logger>
 
 
 	<root level="debug">

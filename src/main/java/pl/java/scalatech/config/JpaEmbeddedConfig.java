@@ -1,30 +1,36 @@
 package pl.java.scalatech.config;
 
-import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.vendor.Database;
+
+import com.zaxxer.hikari.HikariConfig;
 
 @Configuration
 @Slf4j
 @Profile(value = "test")
 public class JpaEmbeddedConfig extends JpaConfig {
 
-    @Override
-    @Bean
-    public DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
-    }
 
     @Override
     public Database dataBase() {
         return Database.H2;
+    }
+
+    @Override
+    public void dataSourceConfigure(HikariConfig config) throws SQLException {
+        config.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
+        config.setConnectionTestQuery("VALUES 1");
+        config.addDataSourceProperty("URL", "jdbc:h2:~/test");
+        config.addDataSourceProperty("user", "sa");
+        config.addDataSourceProperty("password", "");
+
+       
     }
 
 }
