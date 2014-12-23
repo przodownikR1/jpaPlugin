@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.orm.jpa.vendor.Database;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -14,6 +15,7 @@ import com.zaxxer.hikari.HikariConfig;
 @Configuration
 @Slf4j
 @Profile(value = "test")
+@Order(10001)
 public class JpaEmbeddedConfig extends JpaConfig {
 
 

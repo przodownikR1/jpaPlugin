@@ -35,7 +35,6 @@ import pl.java.scalatech.jpa.CustomHibernateJpaDialect;
 
 @EnableJpaRepositories(basePackages = "pl.java.scalatech.repository")
 @PropertySource("classpath:spring-data.properties")
-@PropertySource("classpath:application.properties")
 @Slf4j
 @Import(Metrics2Config.class)
 public abstract class JpaConfig {

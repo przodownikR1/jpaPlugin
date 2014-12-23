@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.orm.jpa.vendor.Database;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -16,10 +17,9 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @Profile(value="h2")
+@Order(10001)
 public class H2Database extends JpaConfig{
-    
-    
-    
+   
     @Bean(destroyMethod = "close")
     @DependsOn(value = "h2Server")
     DataSource dataSource(Server h2Server) throws SQLException {
