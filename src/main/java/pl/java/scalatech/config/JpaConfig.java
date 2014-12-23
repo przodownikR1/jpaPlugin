@@ -65,22 +65,12 @@ public abstract class JpaConfig {
     @Value("${hibernate.hbm2ddl.auto}")
     protected Boolean hbm2ddlAuto;
 
-    @Value("${boneCp.partition.count}")
-    protected int partitionCount;
-
-    @Value("${boneCp.partition.minConnectionsPerPartition}")
-    protected int minConnectionsPerPartition;
-
-    @Value("${boneCp.partition.maxConnectionsPerPartition}")
-    protected int maxConnectionsPerPartition;
-
     @Value("${hibernate.show.sql}")
     protected Boolean showSql;
 
     @Value("${jpa.package}")
     protected String jpaPackage;
     
-  
     @Value("${jpa.hikariMaxPoolSize}")
     protected int maxPoolSize;
     
@@ -96,7 +86,6 @@ public abstract class JpaConfig {
     @Value("${jpa.hikariRegisterMbeans}")
     protected boolean registerMbeans;
     
-   
     /*
      * @Bean
      * public Flyway flyway() {
