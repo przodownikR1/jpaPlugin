@@ -15,8 +15,8 @@ publishing {
             from components.java
             pom.withXml {
                 def root = asNode()
-                root.appendNode('name', 'basicEntity')
-                root.appendNode('description', 'common entity for all jpa projects')
+                root.appendNode('name', 'jpaPlugin')
+                root.appendNode('description', 'common db connectors for  jpa projects')
                 root.appendNode('inceptionYear', '2014')
                 
                 def developer = root.appendNode('developers').appendNode('developer')
@@ -43,18 +43,13 @@ publishing {
     }
 
     repositories {
-     /*   maven {
-            name 'myLocal'
-            url "file://${System.env.HOME}/repos/"
-            logger.quiet "${url} "
-            logger.quiet "${System.env.HOME}"
-        }*/
+   
      
         maven {
             name 'remoteRepository'
-            logger.quiet " +++      ${project.version}"
+            logger.info " +++      ${project.version}"
             url project.version.endsWith('-SNAPSHOT') ? nexusSnapshotRepoUrl : nexusReleaseRepoUrl
-            logger.quiet "  url : ${url}  ,  group : ${group}   ,  version : ${version}"  
+            logger.info "  url : ${url}  ,  group : ${group}   ,  version : ${version}"  
             
             credentials { 
                 username = '${nexusUsername}'
@@ -62,17 +57,5 @@ publishing {
             }
         }
     }
-    
-/*    uploadArchives {
-        repositories {
-            mavenDeployer {
-                   //http://192.168.1.250:8487/nexus/content/repositories
-                    repository(url: "http://192.168.1.250:8487/nexus/content/repositories/releases"){
-                    logger.quiet " nexusLogin  :  ${nexusLogin}   -- >    nexusPassword  :  ${nexusPassword}  "
-                    authentication ( userName: '${nexusLogin}', password: '${nexusPassword}' )
-                }
-            }
-        }
-    }*/
-    
 }
+
