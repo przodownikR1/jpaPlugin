@@ -33,7 +33,7 @@
 		<file>jpaPlugin.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
-			<fileNamePattern>${USER_HOME}/log/logs/jpaPlugin_%d{yyyy-MM-dd}.log
+			<fileNamePattern>jpaPlugin_%d{yyyy-MM-dd}.log
 			</fileNamePattern>
 			<!-- keep 30 days' worth of history -->
 			<maxHistory>30</maxHistory>
@@ -47,21 +47,18 @@
 	
 	 <appender name="Sql" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
-        <file>logs/jpa_plugin_sql.log</file>
+        <file>jpa_plugin_sql.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <maxIndex>10</maxIndex>
-            <fileNamePattern>logs/jpaPlugin.log.%i</fileNamePattern>
+            <fileNamePattern>jpaPlugin.log.%i</fileNamePattern>
         </rollingPolicy>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
             <maxFileSize>25MB</maxFileSize>
         </triggeringPolicy>
     </appender>
-
-
- 
 
     <logger name="jdbc.sqlonly" additivity="false" level="INFO">
         <appender-ref ref="Sql" />

@@ -21,7 +21,7 @@ import pl.java.scalatech.config.PropertiesLoader;
 @ActiveProfiles(value = "test")
 @Transactional
 @Slf4j
-public class ApplicationTests {
+public class JpaPluginContextTest {
     @Autowired
     private MetricRegistry metricRegistry;
 

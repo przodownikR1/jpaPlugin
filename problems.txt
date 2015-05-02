@@ -1,0 +1,9 @@
+1. 
+Caused by: java.lang.ArrayStoreException: sun.reflect.annotation.TypeNotPresentExceptionProxy entitymanager
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in pl.java.scalatech.config.JpaEmbeddedConfig: 
+Invocation of init method failed; nested exception is java.lang.ArrayStoreException: sun.reflect.annotation.TypeNotPresentExceptionProxy
+
+resolved
+ 
+added spring-aspects
+
