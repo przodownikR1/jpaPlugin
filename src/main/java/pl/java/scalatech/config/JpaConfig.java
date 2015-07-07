@@ -85,16 +85,7 @@ public abstract class JpaConfig {
     @Value("${jpa.hikariRegisterMbeans}")
     protected boolean registerMbeans;
     
-    /*
-     * @Bean
-     * public Flyway flyway() {
-     * Flyway flyway = new Flyway();
-     * flyway.setDataSource(dataSource());
-     * flyway.migrate();
-     * return flyway;
-     * }
-     */
-   
+  
 
     public abstract void dataSourceConfigure(HikariConfig hikariConfig) throws SQLException;
     public abstract Database dataBase();
