@@ -7,6 +7,12 @@ apply from: "gradle/assembler.gradle"
 apply from: "gradle/release.gradle"
 apply from: "gradle/sonar.gradle"
 
+
+libsDirName = './target'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 sourceSets {
     intTest
     main {
